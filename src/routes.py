@@ -76,7 +76,7 @@ def update_post(post_id):
     post = posts[post_id]
     post_body = json.loads(request.data)
     post['text'] = post_body['text']
-    return json.dumps({'success': True})
+    return json.dumps({'success': True, 'data': post})
   return json.dumps({'success': False, 'error': 'Post not found'}), 404
 
 @app.route('/api/post/<int:post_id>/', methods=['DELETE'])
