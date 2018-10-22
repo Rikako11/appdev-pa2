@@ -84,7 +84,13 @@ def post_comment(post_id):
 def get_all_comments():
   comments = Db.get_comments()
   return json.dumps({'success': True, 'data': comments}), 201
-    
+
+@app.route('/api/tables/', methods=['DELETE'])
+def delete_tables():
+    Db.delete_post_table()
+    Db.delete_comment_table()
+    return json.dumps({'success': True}), 201
+
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=5000, debug=True)
 

@@ -52,6 +52,9 @@ class DB(object):
     def delete_post_table(self):
         self.conn.execute('DROP TABLE IF EXISTS post;')
 
+    def delete_comment_table(self):
+        self.conn.execute('DROP TABLE IF EXISTS comments;')
+
     def get_all_posts(self):
         cursor = self.conn.execute('SELECT * FROM post;')
         posts = []
@@ -110,6 +113,7 @@ class DB(object):
  
     def get_comments(self):
         cur = self.conn.execute("SELECT * FROM comments")
+        comments = [] 
         for row in cur:
-            return {'id': row[0], 'score': row[2], 'text': row[3], 'username': row[4]}
-        return None
+            comments.append({'id': row[0], 'score': row[2], 'text': row[3], 'username': row[4]})
+        return comments
