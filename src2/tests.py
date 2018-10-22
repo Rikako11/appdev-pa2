@@ -61,6 +61,8 @@ class TestRoutes(unittest.TestCase):
         assert comments[0]['text'] == 'First comment'
         assert comments[0]['username'] == 'Megan'
 
+        res = requests.delete(LOCAL_URL + '/api/post/' + str(post_id) + '/')
+
     def test_get_invalid_post(self):
         res = requests.get(LOCAL_URL + '/api/post/1000/')
         assert not res.json()['success']

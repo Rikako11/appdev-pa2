@@ -87,18 +87,6 @@ class DB(object):
     def delete_post_by_id(self, id):
         self.conn.execute("DELETE FROM post WHERE ID == ?;", (id,))
         self.conn.commit()
-
-    def initial_post_insert(self):
-        self.conn.execute("""
-            INSERT INTO post (SCORE,TEXT,USERNAME)
-            VALUES (0, "First Post!", "Young");
-        """)
-        self.conn.commit()
-        self.conn.execute("""
-            INSERT INTO post (SCORE,TEXT,USERNAME)
-            VALUES (0, "Second Post!", "Young");
-        """)
-        self.conn.commit()
      
     def insert_comment_table(self, post_id, text, username):
         cur = self.conn.cursor()
@@ -122,6 +110,6 @@ class DB(object):
  
     def get_comments(self):
         cur = self.conn.execute("SELECT * FROM comments")
-        for row in cursor:
+        for row in cur:
             return {'id': row[0], 'score': row[2], 'text': row[3], 'username': row[4]}
         return None
