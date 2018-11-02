@@ -17,6 +17,9 @@ with app.app_context():
 @app.route('/api/posts/')
 def get_posts():
     posts = Post.query.all()
+    #Comment.query.delete()
+    #Post.query.delete()
+    #db.session.commit()
     res = {'success': True, 'data': [post.serialize() for post in posts]} 
     return json.dumps(res), 200
 
@@ -25,7 +28,6 @@ def create_post():
     post_body = json.loads(request.data)
 
     post = Post(
-        score = post_body.get('score'),
         text = post_body.get('text'),
         username = post_body.get('username')
     )
@@ -73,7 +75,6 @@ def create_comment(post_id):
     if post is not None:
         comment_body = json.loads(request.data)
         comment = Comment(
-            score=comment_body.get('score'),
             text=comment_body.get('text'),
             username=comment_body.get('username'),
             post_id=post.id
@@ -81,8 +82,38 @@ def create_comment(post_id):
         post.comments.append(comment)
         db.session.add(comment)
         db.session.commit()
-        return json.dumps({'success': True, 'data': comment.serialize()})
+        return json.dumps({'success': True, 'data': comment.serialize()}), 201
     return json.dumps({'success': False, 'error': 'Post not found!'}), 404 
+
+@app.route('/api/post/<int:post_id>/vote/', methods=['POST'])
+def update_post_vote(post_id):
+    post = Post.query.filter_by(id=post_id).first()
+    if post is not None:
+        vote_body = json.loads(request.data)
+        vote = vote_body.get('vote')
+        if vote == "" or vote:
+           post.score += 1
+           db.session.commit()
+        elif not vote:
+           post.score -= 1
+           db.session.commit()
+        return json.dumps({'success': True, 'data': post.serialize()}), 200
+    return json.dumps({'success': False, 'error': 'Post not found or vote is invalid!'}), 404
+
+@app.route('/api/comment/<int:comment_id>/vote/', methods=['POST'])
+def update_comment_vote(comment_id):
+    comment = Comment.query.filter_by(id=comment_id).first()
+    if comment is not None:
+        vote_body = json.loads(request.data)
+        vote = vote_body.get('vote')
+        if vote == "" or vote:
+           comment.score += 1
+           db.session.commit()
+        elif not vote:
+           comment.score -= 1
+           db.session.commit()
+        return json.dumps({'success': True, 'data': comment.serialize()}), 200
+    return json.dumps({'success': False, 'error': 'Comment not found or vote is invalid!'}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

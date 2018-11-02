@@ -5,19 +5,20 @@ db = SQLAlchemy()
 class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)
-    score= db.Column(db.Integer)
+    score = db.Column(db.Integer)
     text = db.Column(db.String, nullable=False)
     username = db.Column(db.String, nullable=False)
     comments = db.relationship('Comment', cascade='delete')
 
     def __init__(self, **kwargs):
+        self.score = 0
         self.text = kwargs.get('text', '')
         self.username = kwargs.get('username', '')
 
     def serialize(self):
         return {
             'id': self.id,
-            'score': 0,
+            'score': self.score,
             'text': self.text,
             'username': self.username
         }
@@ -25,6 +26,7 @@ class Post(db.Model):
 class Comment(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
+    score = db.Column(db.Integer)
     text = db.Column(db.String, nullable=False)
     username = db.Column(db.String, nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
@@ -38,7 +40,7 @@ class Comment(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'score': 0,
+            'score': self.score,
             'text': self.text,
             'username': self.username
         }
